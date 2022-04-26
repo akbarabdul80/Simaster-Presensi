@@ -50,23 +50,6 @@
                 android:src="@drawable/ic_logout" />
 
         </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/semibold"
-                android:text="@string/title_scan_qr"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-
-
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
