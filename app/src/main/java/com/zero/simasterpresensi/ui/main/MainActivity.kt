@@ -19,10 +19,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import com.oratakashi.viewbinding.core.binding.activity.viewBinding
 import com.oratakashi.viewbinding.core.tools.onClick
+import com.oratakashi.viewbinding.core.tools.startActivity
 import com.oratakashi.viewbinding.core.tools.toast
 import com.zero.simasterpresensi.R
 import com.zero.simasterpresensi.data.db.Sessions
@@ -30,6 +32,7 @@ import com.zero.simasterpresensi.data.model.token.ResponseToken
 import com.zero.simasterpresensi.data.state.SimpleState
 import com.zero.simasterpresensi.databinding.ActivityMainBinding
 import com.zero.simasterpresensi.root.App
+import com.zero.simasterpresensi.ui.login.LoginActivity
 import com.zero.simasterpresensi.utils.MakeToast
 import dmax.dialog.SpotsDialog
 import me.dm7.barcodescanner.zxing.ZXingScannerView
@@ -75,11 +78,23 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         initScannerView()
         initEasyImage()
         initListener()
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         with(binding) {
             btnLogout.onClick {
-
+                MaterialAlertDialogBuilder(this@MainActivity)
+                    .setTitle("Konfirmasi")
+                    .setMessage("Apakah anda ingin keluar dari akun ini?")
+                    .setPositiveButton("Ya") { dialog, _ ->
+                        App.sessions.logout()
+                        dialog.dismiss()
+                        startActivity(LoginActivity::class.java)
+                        finish()
+                    }
+                    .setNegativeButton("Tidak") { dialog, _ ->
+                        dialog.dismiss()
+                    }.show()
             }
 
             cvFile.onClick {
