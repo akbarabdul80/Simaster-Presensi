@@ -1,6 +1,7 @@
 package com.zero.simasterpresensi.data.network
 
 import com.zero.simasterpresensi.data.model.commit_device.ResponseCommitDevice
+import com.zero.simasterpresensi.data.model.scan_qr.ResponseScanQr
 import com.zero.simasterpresensi.data.model.token.ResponseToken
 import com.zero.simasterpresensi.data.model.user.DataUser
 import io.reactivex.Single
@@ -51,5 +52,5 @@ interface ApiEndpoint {
         @Field("latitudeGps") latitudeGps: String,
         @Field("longitudeGps") longitudeGps: String,
         @Field("code") code: String,
-    ): Single<ResponseCommitDevice>
+    ): Single<ResponseScanQr>
 }

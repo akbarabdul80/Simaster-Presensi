@@ -28,6 +28,7 @@ import com.oratakashi.viewbinding.core.tools.startActivity
 import com.oratakashi.viewbinding.core.tools.toast
 import com.zero.simasterpresensi.R
 import com.zero.simasterpresensi.data.db.Sessions
+import com.zero.simasterpresensi.data.model.scan_qr.ResponseScanQr
 import com.zero.simasterpresensi.data.model.token.ResponseToken
 import com.zero.simasterpresensi.data.state.SimpleState
 import com.zero.simasterpresensi.databinding.ActivityMainBinding
@@ -114,21 +115,26 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                     }
                     is SimpleState.Result<*> -> {
                         spotsDialog.dismiss()
-                        if (it.data is ResponseToken) {
-                            if (it.data.status == 200) {
-                                if (this::location.isInitialized) {
-                                    viewModel.scanQr(
-                                        encodedAuth,
-                                        it.data.value!!,
-                                        App.sessions.getData(Sessions.sesId),
-                                        App.sessions.getData(Sessions.groupMenu),
-                                        location.latitude.toString(),
-                                        location.longitude.toString(),
-                                        qrCode
-                                    )
-                                } else {
-                                    getLocation()
+                        when (it.data) {
+                            is ResponseToken -> {
+                                if (it.data.status == 200) {
+                                    if (this::location.isInitialized) {
+                                        viewModel.scanQr(
+                                            encodedAuth,
+                                            it.data.value!!,
+                                            App.sessions.getData(Sessions.sesId),
+                                            App.sessions.getData(Sessions.groupMenu),
+                                            location.latitude.toString(),
+                                            location.longitude.toString(),
+                                            qrCode
+                                        )
+                                    } else {
+                                        getLocation()
+                                    }
                                 }
+                            }
+                            is ResponseScanQr -> {
+                                it.data.message
                             }
                         }
                     }
