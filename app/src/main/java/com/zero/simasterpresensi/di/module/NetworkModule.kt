@@ -3,15 +3,16 @@ package com.zero.simasterpresensi.di.module
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.zero.simasterpresensi.BuildConfig
+import com.zero.simasterpresensi.data.network.AddCookiesInterceptor
 import com.zero.simasterpresensi.data.network.ApiEndpoint
+import com.zero.simasterpresensi.data.network.ReceivedCookiesInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.log
 
 val networkModule = module {
     single { provideOkHttpClient(get()) }
@@ -24,6 +25,8 @@ private fun provideOkHttpClient(context: Context) = if (BuildConfig.DEBUG) {
     loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
     OkHttpClient.Builder()
         .addInterceptor(ChuckerInterceptor(context))
+        .addInterceptor(ReceivedCookiesInterceptor(context))
+        .addInterceptor(AddCookiesInterceptor(context))
         .addInterceptor(loggingInterceptor)
         .build()
 } else OkHttpClient

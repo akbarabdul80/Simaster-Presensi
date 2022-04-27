@@ -114,9 +114,6 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                         spotsDialog.show()
                     }
                     is SimpleState.Result<*> -> {
-                        spotsDialog.dismiss()
-                        mScannerView.startCamera()
-                        mScannerView.setResultHandler(this)
                         when (it.data) {
                             is ResponseToken -> {
                                 if (it.data.status == 200) {
@@ -136,9 +133,13 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                                 }
                             }
                             is ResponseScanQr -> {
-                                it.data.message
+                                toast(it.data.message!!)
                             }
                         }
+
+                        spotsDialog.dismiss()
+                        mScannerView.startCamera()
+                        mScannerView.setResultHandler(this)
                     }
                     is SimpleState.Error -> {
                         spotsDialog.dismiss()
