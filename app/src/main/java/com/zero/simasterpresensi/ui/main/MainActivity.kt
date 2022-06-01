@@ -3,6 +3,7 @@ package com.zero.simasterpresensi.ui.main
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -17,8 +18,9 @@ import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
@@ -276,6 +278,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                 locationPermissionCode
             )
         }
+
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER, 5000, 5f, this
         )
@@ -283,9 +286,51 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
             LocationManager.NETWORK_PROVIDER, 5000, 5f, this
         )
         fusedLocationClient.lastLocation.addOnSuccessListener {
-            location = it
-            Log.e("Location", "onLocationChanged: $it")
-            spotsDialogLocation.dismiss()
+            if (it != null) {
+                location = it
+                Log.e("Location", "onLocationChanged: $it")
+                spotsDialogLocation.dismiss()
+            } else {
+                Log.e("Location", "Last location is null")
+            }
+        }
+    }
+
+    fun showLocationSettingsDialog() {
+        val locationRequest: LocationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result = LocationServices.getSettingsClient(this)
+            .checkLocationSettings(builder.build())
+        result.addOnCompleteListener { task ->
+            try {
+                val response = task.getResult(
+                    ApiException::class.java
+                )
+            } catch (e: ApiException) {
+                when (e.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->
+                        // user a dialog.
+                        try {
+                            // Cast to a resolvable exception.
+                            val resolvable = e as ResolvableApiException
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            resolvable.startResolutionForResult(
+                                this,
+                                100
+                            )
+                        } catch (exception: SendIntentException) {
+                            // Ignore the error.
+                        } catch (exception: ClassCastException) {
+                            // Ignore, should be an impossible error.
+                        }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                    }
+                }
+            }
         }
     }
 
@@ -300,6 +345,11 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
     override fun onDestroy() {
         super.onDestroy()
         locationManager.removeUpdates(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showLocationSettingsDialog()
     }
 
 }
