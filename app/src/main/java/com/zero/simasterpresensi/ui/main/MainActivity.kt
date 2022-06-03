@@ -84,12 +84,6 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         initEasyImage()
         initListener()
 
-        if (RootUtils.isDeviceRooted) {
-            toast("Device Rooted")
-        } else {
-            toast("Device Not Rooted")
-        }
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         with(binding) {
