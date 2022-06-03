@@ -25,9 +25,11 @@ android {
         debug {
             resValue("string", "auth_basic_qrcode", localProperties['AUTH_BASIC_QRCODE'])
             buildConfigField 'String', 'BASE_URL', "\"https://simaster.ugm.ac.id/\""
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             resValue("string", "auth_basic_qrcode", localProperties['AUTH_BASIC_QRCODE'])
             buildConfigField 'String', 'BASE_URL', "\"https://simaster.ugm.ac.id/\""
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
