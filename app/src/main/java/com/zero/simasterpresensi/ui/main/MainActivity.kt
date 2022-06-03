@@ -168,12 +168,6 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         binding.flFlame.addView(mScannerView)
     }
 
-    override fun onStart() {
-        mScannerView.startCamera()
-        doRequestPermission()
-        super.onStart()
-    }
-
     private fun doRequestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -296,7 +290,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         }
     }
 
-    fun showLocationSettingsDialog() {
+    private fun showLocationSettingsDialog() {
         val locationRequest: LocationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         val builder = LocationSettingsRequest.Builder()
@@ -350,6 +344,8 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
     override fun onResume() {
         super.onResume()
         showLocationSettingsDialog()
+        mScannerView.startCamera()
+        doRequestPermission()
     }
 
 }
