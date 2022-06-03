@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.zero.simasterpresensi.BuildConfig
 import com.zero.simasterpresensi.data.model.user.DataUser
+
 
 @SuppressLint("CommitPrefEdits")
 class Sessions(context: Context) {
@@ -20,15 +23,30 @@ class Sessions(context: Context) {
         const val groupMenu: String = "groupMenu"
     }
 
-    var pref: SharedPreferences
-    var editor: SharedPreferences.Editor? = null
+    var masterKey: MasterKey = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+
+    var pref: SharedPreferences = EncryptedSharedPreferences.create(
+        context,
+        PREF_NAME,
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+
+    var editor = pref.edit()
 
     var context: Context? = null
-    val PRIVATE_MODE: Int = 0
 
     init {
         this.context = context
-        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE)
+        pref = EncryptedSharedPreferences.create(
+            context,
+            PREF_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
         editor = pref.edit()
     }
 
@@ -54,16 +72,11 @@ class Sessions(context: Context) {
         return getData(sesId).isNotEmpty()
     }
 
-    fun Logout() {
-        editor!!.clear()
-        editor!!.commit()
-    }
-
     fun doLogin(data: DataUser?) {
         if (data != null) pref.edit {
             putString(sesId, data.sesId)
             putString(namaLengkap, data.namaLengkap)
-            putString(groupMenuNama, groupMenuNama)
+            putString(groupMenuNama, data.groupMenuNama)
             putString(userTipeNomor, data.userTipeNomor)
             putString(img, data.img)
             putString(groupMenu, data.groupMenu)

@@ -1,8 +1,12 @@
 package com.zero.simasterpresensi.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import com.zero.simasterpresensi.BuildConfig
+import com.zero.simasterpresensi.root.App
+import com.zero.simasterpresensi.ui.login.LoginActivity
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
@@ -21,12 +25,17 @@ object MakeToast {
 
                 500 -> Toast.makeText(context, "Server sedang gangguan", Toast.LENGTH_LONG).show()
 
-                403 -> Toast.makeText(context, "Sedang terjadi galat", Toast.LENGTH_LONG).show()
+                403 -> {
+                    Toast.makeText(context, "Anda sudah login didevice lain!", Toast.LENGTH_LONG)
+                        .show()
+                    App.sessions.logout()
+                    context.startActivity(Intent(context, LoginActivity::class.java))
+                    (context as Activity).finish()
+                }
 
                 else -> if (BuildConfig.DEBUG)
                     Toast.makeText(
-                        context, "Gagal memuat data : " +
-                                "${error.message()} ${error.code()}", Toast.LENGTH_LONG
+                        context, "Sedang Galat", Toast.LENGTH_LONG
                     ).show()
             }
         } else if (error is SocketTimeoutException) {
