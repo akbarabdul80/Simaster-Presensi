@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -37,6 +38,7 @@ import com.zero.simasterpresensi.databinding.ActivityMainBinding
 import com.zero.simasterpresensi.root.App
 import com.zero.simasterpresensi.ui.login.LoginActivity
 import com.zero.simasterpresensi.utils.MakeToast
+import com.zero.simasterpresensi.utils.RootUtils
 import dmax.dialog.SpotsDialog
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -81,6 +83,12 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         initScannerView()
         initEasyImage()
         initListener()
+
+        if (RootUtils.isDeviceRooted) {
+            toast("Device Rooted")
+        } else {
+            toast("Device Not Rooted")
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
