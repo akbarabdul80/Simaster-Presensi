@@ -30,6 +30,18 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true" />
+
+
+        <service
+            android:name=".service.QrCodeScanTileService"
+            android:icon="@drawable/ic_qr_scan"
+            android:label="@string/scan_qr_code"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
