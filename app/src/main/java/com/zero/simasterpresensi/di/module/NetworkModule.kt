@@ -25,12 +25,12 @@ private fun provideOkHttpClient(context: Context) = if (BuildConfig.DEBUG) {
     loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
     OkHttpClient.Builder()
         .addInterceptor(ChuckerInterceptor(context))
-        .addInterceptor(ReceivedCookiesInterceptor(context))
-        .addInterceptor(AddCookiesInterceptor(context))
         .addInterceptor(loggingInterceptor)
         .build()
 } else OkHttpClient
     .Builder()
+    .addInterceptor(ReceivedCookiesInterceptor(context))
+    .addInterceptor(AddCookiesInterceptor(context))
     .build()
 
 private fun provideRetrofit(
