@@ -131,6 +131,15 @@
 
         </androidx.cardview.widget.CardView>
 
+        <Button
+            android:id="@+id/btnKKN"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/round_button"
+            android:hint="Presensi KKN"
+            android:textColorHint="@color/white" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

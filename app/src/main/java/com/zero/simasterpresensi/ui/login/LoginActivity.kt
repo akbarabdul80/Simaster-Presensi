@@ -49,60 +49,66 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkRoot() {
         if (RootUtils.isDeviceRooted) {
-            val runtime = Runtime.getRuntime()
-            val p =
-                runtime.exec("su -c cat /data/data/id.ac.ugm.simaster/shared_prefs/SIMASTER.xml")
-            val standardIn = BufferedReader(
-                InputStreamReader(p.inputStream)
-            )
-
-            val response = standardIn
-                .readText()
-                .replace("&quot;", "")
-
-            Log.e("Data", response)
-            if (response != "") {
-                val name = response
-                    .split("<string name=\"user_nama_lengkap\">")[1]
-                    .split("</string>")[0]
-
-                val groupID = response
-                    .split("<string name=\"group_menu\">")[1]
-                    .split("</string>")[0]
-
-                val sesId = response
-                    .split("<string name=\"bearer\">")[1]
-                    .split("</string>")[0]
-
-                val userTypeNumber = response
-                    .split("<string name=\"user_tipe_nomor\">")[1]
-                    .split("</string>")[0]
-
-                val img = response
-                    .split("<string name=\"user_img\">")[1]
-                    .split("</string>")[0]
-
-                val groupMenuNama = response
-                    .split("<string name=\"user_group_nama\">")[1]
-                    .split("</string>")[0]
-
-                dataUser = DataUser(
-                    sesId,
-                    name,
-                    groupMenuNama,
-                    userTypeNumber,
-                    img,
-                    groupID,
-                    1,
-                    ""
+            try {
+                val runtime = Runtime.getRuntime()
+                val p =
+                    runtime.exec("su -c cat /data/data/id.ac.ugm.simaster/shared_prefs/SIMASTER.xml")
+                val standardIn = BufferedReader(
+                    InputStreamReader(p.inputStream)
                 )
-                App.sessions.doLogin(dataUser)
-                startActivity(MainActivity::class.java)
-                toast("Device Rooted and Logged In with SIMASTER sessions")
-                finish()
-            } else {
-                toast("Simaster not found or you are not logged in!")
+
+                val response = standardIn
+                    .readText()
+                    .replace("&quot;", "")
+
+                Log.e("Data", response)
+                if (response != "") {
+                    val name = response
+                        .split("<string name=\"user_nama_lengkap\">")[1]
+                        .split("</string>")[0]
+
+                    val groupID = response
+                        .split("<string name=\"group_menu\">")[1]
+                        .split("</string>")[0]
+
+                    val sesId = response
+                        .split("<string name=\"bearer\">")[1]
+                        .split("</string>")[0]
+
+                    val userTypeNumber = response
+                        .split("<string name=\"user_tipe_nomor\">")[1]
+                        .split("</string>")[0]
+
+                    val img = response
+                        .split("<string name=\"user_img\">")[1]
+                        .split("</string>")[0]
+
+                    val groupMenuNama = response
+                        .split("<string name=\"user_group_nama\">")[1]
+                        .split("</string>")[0]
+
+                    dataUser = DataUser(
+                        sesId,
+                        name,
+                        groupMenuNama,
+                        userTypeNumber,
+                        img,
+                        groupID,
+                        1,
+                        ""
+                    )
+                    App.sessions.doLogin(dataUser)
+                    startActivity(MainActivity::class.java)
+                    toast("Device Rooted and Logged In with SIMASTER sessions")
+                    finish()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                toast("Grant superuser access to this app!")
+
             }
+        } else {
+            toast("Simaster not found or you are not logged in!")
         }
     }
 
@@ -113,6 +119,7 @@ class LoginActivity : AppCompatActivity() {
                     is SimpleState.Loading -> {
                         spotsDialog.show()
                     }
+
                     is SimpleState.Result<*> -> {
                         spotsDialog.dismiss()
                         if (it.data is DataUser) {
@@ -141,6 +148,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
                     }
+
                     is SimpleState.Error -> {
                         spotsDialog.dismiss()
                         MakeToast.toastThrowable(this, it.error)

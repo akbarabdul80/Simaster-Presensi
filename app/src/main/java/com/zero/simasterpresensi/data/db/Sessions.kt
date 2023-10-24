@@ -21,6 +21,11 @@ class Sessions(context: Context) {
         const val userTipeNomor: String = "userTipeNomor"
         const val img: String = "img"
         const val groupMenu: String = "groupMenu"
+        const val simasterUGM_cookie: String = "simasterUGM_cookie"
+        const val simaster_ugm_sess: String = "simaster-ugm_sess"
+
+        const val FAKE_LONG: String = "FAKE_LONG"
+        const val FAKE_LAT: String = "FAKE_LAT"
     }
 
     var masterKey: MasterKey = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)

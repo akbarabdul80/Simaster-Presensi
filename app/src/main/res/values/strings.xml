@@ -20,4 +20,12 @@
     <string name="title_pilih_file">Pilih File</string>
     <string name="dec_pilih_file">Pilih file dari galeri</string>
     <string name="scan_qr_code">Presensi QR Code</string>
+    <string name="title_presensi_kkn">Presensi KKN</string>
+    <string name="title_start_service">Start Service</string>
+    <string name="title_kill_service">Kill Service</string>
+    <string name="title_presensi_sekarang">Presensi Sekarang</string>
+    <string name="title_fake_latitute">Fake Latitute</string>
+    <string name="title_fake_longtitute">Fake Longtitute</string>
+    <string name="title_save_current_location">Save current location to fake long lat</string>
+    <string name="title_save_fake_location">Save Fake Location</string>
 </resources>

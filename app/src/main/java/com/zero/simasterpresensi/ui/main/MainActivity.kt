@@ -36,9 +36,9 @@ import com.zero.simasterpresensi.data.model.token.ResponseToken
 import com.zero.simasterpresensi.data.state.SimpleState
 import com.zero.simasterpresensi.databinding.ActivityMainBinding
 import com.zero.simasterpresensi.root.App
+import com.zero.simasterpresensi.ui.kkn.KKNActivity
 import com.zero.simasterpresensi.ui.login.LoginActivity
 import com.zero.simasterpresensi.utils.MakeToast
-import com.zero.simasterpresensi.utils.RootUtils
 import dmax.dialog.SpotsDialog
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -84,7 +84,6 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
         initEasyImage()
         initListener()
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         with(binding) {
             btnLogout.onClick {
@@ -105,6 +104,10 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
             cvFile.onClick {
                 easyImage.openGallery(this@MainActivity)
             }
+
+            btnKKN.onClick {
+                startActivity(KKNActivity::class.java)
+            }
         }
 
         getLocation()
@@ -117,6 +120,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                     is SimpleState.Loading -> {
                         spotsDialog.show()
                     }
+
                     is SimpleState.Result<*> -> {
                         when (it.data) {
                             is ResponseToken -> {
@@ -136,6 +140,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                                     }
                                 }
                             }
+
                             is ResponseScanQr -> {
                                 toast(it.data.message!!)
                             }
@@ -145,6 +150,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                         mScannerView.startCamera()
                         mScannerView.setResultHandler(this)
                     }
+
                     is SimpleState.Error -> {
                         spotsDialog.dismiss()
                         MakeToast.toastThrowable(this, it.error)
@@ -262,7 +268,6 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
 
     private fun getLocation() {
         spotsDialogLocation.show()
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if ((ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -273,23 +278,28 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 locationPermissionCode
             )
-        }
+        } else {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER, 5000, 5f, this
-        )
-        locationManager.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER, 5000, 5f, this
-        )
-        fusedLocationClient.lastLocation.addOnSuccessListener {
-            if (it != null) {
-                location = it
-                Log.e("Location", "onLocationChanged: $it")
-                spotsDialogLocation.dismiss()
-            } else {
-                Log.e("Location", "Last location is null")
+            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 5000, 5f, this
+            )
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 5000, 5f, this
+            )
+            fusedLocationClient.lastLocation.addOnSuccessListener {
+                if (it != null) {
+                    location = it
+                    Log.e("Location", "onLocationChanged: $it")
+                    spotsDialogLocation.dismiss()
+                } else {
+                    Log.e("Location", "Last location is null")
+                }
             }
         }
+
     }
 
     private fun showLocationSettingsDialog() {
@@ -323,6 +333,7 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
                         } catch (exception: ClassCastException) {
                             // Ignore, should be an impossible error.
                         }
+
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
                     }
                 }
@@ -340,7 +351,9 @@ class MainActivity : AppCompatActivity(), ZXingScannerView.ResultHandler, Locati
 
     override fun onDestroy() {
         super.onDestroy()
-        locationManager.removeUpdates(this)
+        if (this::locationManager.isInitialized) {
+            locationManager.removeUpdates(this)
+        }
     }
 
     override fun onResume() {
